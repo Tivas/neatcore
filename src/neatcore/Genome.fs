@@ -44,7 +44,7 @@ module Genome =
             |> Seq.choose 
                 (fun x ->
                     match x with
-                    | Output _ -> Some(x)
+                    | Input _ -> Some(x)
                     | Hidden _ -> Some(x)
                     | _ -> None)
             |> Util.shuffle 
@@ -55,7 +55,7 @@ module Genome =
             |> Seq.choose 
                 (fun x ->
                     match x with
-                    | Input _ -> Some(x)
+                    | Output _ -> Some(x)
                     | Hidden _ -> Some(x)
                     | _ -> None)
             |> Util.shuffle 

@@ -6,8 +6,13 @@
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="paket.references" />
+    <Compile Include="GenomeTests.fs" />
     <Compile Include="Sample.fs" />
     <Compile Include="Main.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\neatcore\neatcore.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
