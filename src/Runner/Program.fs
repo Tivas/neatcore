@@ -2,7 +2,7 @@
 
 open System
 open neatcore.Population
-open neatcore.Substrate
+open neatcore.Phenotype
 open neatcore
 open System.IO
 

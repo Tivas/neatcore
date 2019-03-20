@@ -12,11 +12,6 @@ module Genome =
     | Input of NodeData
     | Hidden of NodeData
     | Output of NodeData
-        //override x.Equals(y) =
-        //    match x, y with 
-        //    | Input resx, :? Input resy -> resx.InnovationNumber = resy.Innovationnumber 
-        //    | _ -> false
-
 
     type ConnectionGene = 
         { 
@@ -34,7 +29,7 @@ module Genome =
         } 
 
     type Genome =
-    | EvaluatedGenome of GenomeData * float
+    | EvaluatedGenome of GenomeData * fitness:float
     | NonEvaluatedGenome of GenomeData
 
     // Mutation

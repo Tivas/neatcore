@@ -3,19 +3,19 @@
 open Genome
 open TensorFlow
 
-module Substrate = 
-    type Substrate = { Graph : TFGraph }
+module Phenotype = 
+    type Phenotype = { Graph : TFGraph }
     
-    let run substrate = 
-        let session = new TFSession(substrate)
+    let run phenotype = 
+        let session = new TFSession(phenotype)
         ""
 
 module SubstrateCompiler =
-    type Compile = GenomeData -> Substrate.Substrate
+    type Compile = GenomeData -> Phenotype.Phenotype
 
     let rec Compile (genome:GenomeData) =
         let mapNode (graph:TFGraph) = function
-            | Input d -> graph.Placeholder(TFDataType.Float, TFShape.Scalar, string d.InnovationNumber)
+            //| Input d -> graph.Placeholder(TFDataType.Float, TFShape.Scalar, string d.InnovationNumber)
             | _ ->  graph.Placeholder(TFDataType.Float, TFShape.Scalar, "unknown")
 
         let mapConnection (graph:TFGraph) conn = graph
@@ -23,4 +23,4 @@ module SubstrateCompiler =
         let graph = new TFGraph()
        // let nodes = genome.Nodes |> List.map (fun n -> graph.Constant(42, TFShape.Scalar) )
 
-        { Substrate.Substrate.Graph = graph }
+        {Phenotype.Phenotype.Graph = graph }

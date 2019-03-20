@@ -11,7 +11,7 @@
     <None Include="paket.references" />
     <Compile Include="Util.fs" />
     <Compile Include="Genome.fs" />
-    <Compile Include="Substrate.fs" />
+    <Compile Include="Phenotype.fs" />
     <Compile Include="Population.fs" />
     <Compile Include="Composition.root.fs" />
   </ItemGroup>
