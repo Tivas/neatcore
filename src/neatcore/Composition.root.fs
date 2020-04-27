@@ -1,4 +1,4 @@
-﻿namespace neatcore
+﻿namespace NeatCore
 
 //module Composition =
     

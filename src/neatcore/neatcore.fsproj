@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>false</Optimize>
@@ -11,7 +11,6 @@
     <None Include="paket.references" />
     <Compile Include="Util.fs" />
     <Compile Include="Genome.fs" />
-    <Compile Include="Phenotype.fs" />
     <Compile Include="Population.fs" />
     <Compile Include="Composition.root.fs" />
   </ItemGroup>

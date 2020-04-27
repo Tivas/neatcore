@@ -1,4 +1,4 @@
-﻿namespace neatcore
+﻿namespace NeatCore
 
 module Util =
     open System
@@ -16,4 +16,14 @@ module Util =
                 value := System.Threading.Interlocked.Increment(value)
                 !value
 
-    let shuffle xs = xs |> Seq.sortBy (fun _ -> Guid.NewGuid())
+    let shuffle (list: 'a array) = 
+        match list with
+        | [||] -> Array.empty
+        | xs -> xs |> Array.sortBy (fun _ -> Guid.NewGuid())
+    
+    let randomElement (random:System.Random) (arr: 'a array) =
+        let lengthAsFloat = arr.Length |> float
+        let number = ((randomizer random 0.0 lengthAsFloat)()) |> int
+        arr.[number]
+
+    
