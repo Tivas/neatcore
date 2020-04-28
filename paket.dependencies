@@ -5,3 +5,4 @@ nuget Expecto.FsCheck
 nuget Fake
 nuget FSharp.Core 
 nuget TensorFlowSharp
+nuget FSharpx.Collections

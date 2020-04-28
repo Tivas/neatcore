@@ -25,29 +25,59 @@ module Genome =
           ToNode: NodeGene
           InnovationNumber: int }
 
+    type GenomeId = Guid
+
+    type GenomeFitness = float
+
     type GenomeData =
-        { Nodes: NodeGene array
+        { Id: GenomeId
+          Nodes: NodeGene array
           Connections: Map<NodeGene * NodeGene, ConnectionGene> }
+        static member Zero =
+            { Id = Guid.NewGuid()
+              Nodes = [||]
+              Connections = Map.empty }
 
-    type Genome =
-        | EvaluatedGenome of GenomeData * fitness: float
-        | NonEvaluatedGenome of GenomeData
+    type NonEvaluatedGenome = GenomeData
 
-    let AddConnection (genome : GenomeData) (con: ConnectionGene) : GenomeData = 
+    [<CustomComparison>]
+    [<CustomEquality>]
+    type EvaluatedGenome =
+        { Data: GenomeData
+          Fitness: GenomeFitness }
+
+        override x.Equals(yobj) =
+            match yobj with
+            | :? EvaluatedGenome as y -> x.Data.Id = y.Data.Id
+            | _ -> failwith "no comprende dude"
+
+        interface System.IComparable with
+            member x.CompareTo yobj =
+                match yobj with
+                | :? EvaluatedGenome as y ->
+                    match x.Fitness, y.Fitness with
+                    | (x, y) when x > y -> 1
+                    | (x, y) when x < y -> -1
+                    | _ -> 0
+                | _ -> failwith "no comprende dude"
+
+
+
+    let AddConnection (genome: GenomeData) (con: ConnectionGene): GenomeData =
         let cons = genome.Connections
         let lookup = (con.FromNode, con.ToNode)
-        let newGenomeConnections = 
+
+        let newGenomeConnections =
             match cons.ContainsKey lookup with
-            | true -> 
+            | true ->
                 let newCons = cons.Remove lookup
-                (lookup, con) |> newCons.Add 
-            | false -> 
-                (lookup, con) |> cons.Add 
+                (lookup, con) |> newCons.Add
+            | false -> (lookup, con) |> cons.Add
         { genome with Connections = newGenomeConnections }
 
-    let generateInnovationNumber (generationConnections: GenerationConnection array) fromNode toNode incr =
+    let generateInnovationNumber (generationConnections: GenerationConnection list) fromNode toNode incr =
         let foundConnection =
-            generationConnections |> Array.tryFind (fun x -> x.FromNode = fromNode && x.ToNode = toNode)
+            generationConnections |> List.tryFind (fun x -> x.FromNode = fromNode && x.ToNode = toNode)
         match foundConnection with
         | Some c ->
             printfn "Took already found innovationnumber"
@@ -61,7 +91,6 @@ module Genome =
             |> Array.filter (fun n -> n.Type = Input || n.Type = Hidden)
             |> Util.shuffle
 
-
         let findToNode fromNodes =
             let potentialToNodes = genome.Nodes |> Array.filter (fun n -> n.Type = Output || n.Type = Hidden)
 
@@ -70,7 +99,7 @@ module Genome =
                 potentialToNodes
                 |> Array.tryPick (fun ptn ->
                     // let conn = genome.Connections |> Mapts (fun c -> c.FromNode = fn && c.ToNode = ptn)
-                    let conn = genome.Connections |> Map.containsKey (fn,ptn)
+                    let conn = genome.Connections |> Map.containsKey (fn, ptn)
                     if not conn then Some(fn, ptn) else None))
 
         findToNode fromNodes
@@ -93,14 +122,21 @@ module Genome =
 
             let newGenome = AddConnection genome link
 
-            (newGenome, Some([| generationConnection |])))
+            (newGenome, Some([ generationConnection ])))
         |> Option.defaultValue (genome, None)
 
-    let MutateAddNode random randomWeight connIncr nodeIncr (generationConnections: GenerationConnection array) (genome : GenomeData) = 
+    let MutateAddNode
+        random
+        randomWeight
+        connIncr
+        nodeIncr
+        (generationConnections: GenerationConnection list)
+        (genome: GenomeData)
+        =
         let newNode =
             { Id = nodeIncr()
               Type = Hidden }
-        
+
         let randomConnection =
             genome.Connections
             |> Map.toArray
@@ -126,8 +162,7 @@ module Genome =
 
         let disabledConnection = { randomConnection with IsEnabled = false }
 
-        let newConnections = 
-            [| disabledConnection; incomingConnection; outgoingConnection |]
+        let newConnections = [| disabledConnection; incomingConnection; outgoingConnection |]
 
 
         let generationConnections =
@@ -136,18 +171,15 @@ module Genome =
                 { FromNode = c.FromNode
                   ToNode = c.ToNode
                   InnovationNumber = c.InnovationNumber })
+            |> Array.toList
 
         // Add node to any random connection
         // disable connection add two new
         // incoming connection with weight 1
         // outgoing weight to the same as the old connection
-        let newGenome =
-            { genome with
-                  Nodes = Array.append [| newNode |] genome.Nodes }
+        let newGenome = { genome with Nodes = Array.append [| newNode |] genome.Nodes }
 
-        let newGenomeWithConnections =
-            newConnections
-            |> Array.fold (fun a c -> (AddConnection a c) ) newGenome
+        let newGenomeWithConnections = newConnections |> Array.fold (fun a c -> (AddConnection a c)) newGenome
 
         newGenomeWithConnections, Some(generationConnections)
 
@@ -188,4 +220,4 @@ module Genome =
         let randomNumber = randomWeight()
         let newConnection = { randomConnection with Weight = randomNumber }
         AddConnection genome newConnection
-    // random weight set to random number between -2 and 2
+// random weight set to random number between -2 and 2
