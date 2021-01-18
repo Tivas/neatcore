@@ -1,6 +1,0 @@
-﻿namespace NeatCore
-
-//module Composition =
-    
-    
-
